@@ -1,5 +1,6 @@
 # Проект Movie explorer фронтенд + бэкенд
- domain - api.movie-explorer.nomoredomains.work
+ domain - https://api.movie-explorer.nomoredomains.work
+ frontend - https://movie-explorer.nomoredomains.work
  
 ## Directories
 
