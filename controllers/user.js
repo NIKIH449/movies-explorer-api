@@ -3,7 +3,6 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 const NotFoundError = require('../errors/NotFoundError');
 const WrongData = require('../errors/WrongData');
-const DefaultError = require('../errors/DefaultError');
 const SameEmail = require('../errors/SameEmail');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
@@ -24,12 +23,12 @@ const createUser = (req, res, next) => {
       },
     }))
     .catch((err) => {
-      if (err.name === 'MongoServerError' && err.code === 11000) {
+      if (err.code === 11000) {
         throw new SameEmail('Такой пользователь уже существует.');
       } else if (err.name === 'ValidationError') {
         throw new WrongData('Переданы некорректные данные.');
       } else {
-        throw new DefaultError('Произошла ошибка');
+        next(err);
       }
     })
     .catch(next);
@@ -58,6 +57,7 @@ const login = (req, res, next) => {
 const updateUser = (req, res, next) => {
   const owner = req.user._id;
   const { email, name } = req.body;
+
   User.findByIdAndUpdate(
     owner,
     { name, email },
@@ -71,10 +71,13 @@ const updateUser = (req, res, next) => {
       }
     })
     .catch((err) => {
+      if (err.code === 11000) {
+        throw new SameEmail('Такой пользователь уже существует.');
+      } else
       if (err.name === 'ValidationError') {
         throw new NotFoundError('Данные пользователя не найдены.');
       } else {
-        throw new DefaultError('Произошла ошибка');
+        next(err);
       }
     })
     .catch(next);

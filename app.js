@@ -8,15 +8,18 @@ const { errors } = require('celebrate');
 const limiter = require('./utils/limiter');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const routers = require('./routes/index');
+const errorHandler = require('./middlewares/errorHandler');
 
 const { PORT = 3000 } = process.env;
+const { BASE = 'mongodb://localhost:27017/moviesdb' } = process.env;
+
 const app = express();
 
 const allowedCors = [
   'https://movie-explorer.nomoredomains.work',
   'https://api.movie-explorer.nomoredomains.work',
   'http://movie-explorer.nomoredomains.work',
-  'http://api.nikitas.nomoredomains.rocks',
+  'http://api.movie-explorer.nomoredomains.work',
   'http://localhost:3000/',
 ];
 
@@ -42,17 +45,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(requestLogger);
 app.use(helmet());
-app.use(errorLogger);
 app.use(limiter);
 app.use(routers);
 app.use(errors());
-app.use((err, req, res, next) => {
-  const status = err.statusCode || 500;
-  const { message } = err;
-  res.status(status).json({ message: message || 'Произошла ошибка на сервере' });
-  return next();
-});
+app.use(errorLogger);
+app.use(errorHandler);
 
-mongoose.connect('mongodb://localhost:27017/moviesdb');
-
+mongoose.connect(BASE);
 app.listen(PORT);

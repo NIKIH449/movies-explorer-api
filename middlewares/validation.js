@@ -1,6 +1,5 @@
 const { celebrate, Joi } = require('celebrate');
-
-const regEx = /(http:\/\/|https:\/\/)(www)*.([\w]{3})[a-z0-9\-._~:?#[\]@!$&'()*+,;=]+#*[^а-я]/;
+const validator = require('validator');
 
 const loginValidation = celebrate({
   body: Joi.object().keys({
@@ -16,9 +15,24 @@ const movieValidation = celebrate({
     duration: Joi.number().required(),
     year: Joi.number().required(),
     description: Joi.string().required(),
-    image: Joi.string().required().pattern(regEx),
-    trailerLink: Joi.string().required().pattern(regEx),
-    thumbnail: Joi.string().required().pattern(regEx),
+    image: Joi.string().required().custom((value, helpers) => {
+      if (validator.isURL(value)) {
+        return value;
+      }
+      return helpers.message('Поле image заполнено некорректно.');
+    }),
+    trailer: Joi.string().required().custom((value, helpers) => {
+      if (validator.isURL(value)) {
+        return value;
+      }
+      return helpers.message('Поле trailer заполнено некорректно.');
+    }),
+    thumbnail: Joi.string().required().custom((value, helpers) => {
+      if (validator.isURL(value)) {
+        return value;
+      }
+      return helpers.message('Поле thumbnail заполнено некорректно.');
+    }),
     movieId: Joi.number().required(),
     nameRU: Joi.string().required(),
     nameEN: Joi.string().required(),
