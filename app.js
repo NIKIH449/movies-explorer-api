@@ -47,8 +47,8 @@ app.use(requestLogger);
 app.use(helmet());
 app.use(limiter);
 app.use(routers);
-app.use(errors());
 app.use(errorLogger);
+app.use(errors());
 app.use(errorHandler);
 
 mongoose.connect(BASE);
