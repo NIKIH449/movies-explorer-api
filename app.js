@@ -20,7 +20,7 @@ const allowedCors = [
   'https://api.movie-explorer.nomoredomains.work',
   'http://movie-explorer.nomoredomains.work',
   'http://api.movie-explorer.nomoredomains.work',
-  'http://localhost:3000/',
+  'http://localhost:3000',
 ];
 
 app.use((req, res, next) => {
