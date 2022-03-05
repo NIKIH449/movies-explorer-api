@@ -10,7 +10,7 @@ const auth = (req, res, next) => {
       NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
     );
   } catch (err) {
-    throw new WrongLoginData('Требуется авторизация.');
+    throw new WrongLoginData('Требуется авторизация!');
   }
   req.user = payload;
   next();
