@@ -45,7 +45,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(requestLogger);
 app.use(helmet());
-app.use(limiter);
+//app.use(limiter);
 app.use(routers);
 app.use(errorLogger);
 app.use(errors());
