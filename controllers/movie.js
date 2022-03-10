@@ -1,10 +1,10 @@
-const Movie = require('../models/movie');
-const Forbidden = require('../errors/Forbidden');
-const NotFoundError = require('../errors/NotFoundError');
-const WrongData = require('../errors/WrongData');
+const Movie = require("../models/movie");
+const Forbidden = require("../errors/Forbidden");
+const NotFoundError = require("../errors/NotFoundError");
+const WrongData = require("../errors/WrongData");
 
 const getMovies = (req, res, next) => {
-  Movie.find({})
+  Movie.find({ owner: req.user._id })
     .then((movie) => res.send({ data: movie }))
     .catch((err) => {
       next(err);
@@ -44,8 +44,8 @@ const createMovie = (req, res, next) => {
 
     .then((movie) => res.send({ data: movie }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        throw new WrongData('Переданы неверные данные.');
+      if (err.name === "ValidationError") {
+        throw new WrongData("Переданы неверные данные.");
       } else {
         next(err);
       }
@@ -55,13 +55,14 @@ const createMovie = (req, res, next) => {
 
 const deleteMovieById = (req, res, next) => {
   Movie.findById(req.params._id)
-    .orFail(new NotFoundError('Фильм не найден'))
+    .orFail(new NotFoundError("Фильм не найден"))
     .then((movie) => {
       if (req.user._id === movie.owner.toString()) {
-        return movie.remove()
-          .then(() => res.status(200).send({ message: 'Фильм удалён' }));
+        return movie
+          .remove()
+          .then(() => res.status(200).send({ message: "Фильм удалён" }));
       }
-      throw new Forbidden('Нельзя удалить чужой фильм.');
+      throw new Forbidden("Нельзя удалить чужой фильм.");
     })
     .catch(next);
 };
